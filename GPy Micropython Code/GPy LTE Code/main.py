@@ -5,15 +5,9 @@ from machine import RTC
 from network import LTE
 from network import WLAN
 
-# HOST = "cloudsocket.hologram.io"
-# PORT = 9999
 HOST = "prestoapi.azurewebsites.net"
 PORT = 443
-DEVICE_KEY = "ABCDEFG" #generated on hologram's portal for each SIM card.
-TOPIC = "TOPIC1"
 
-# # Need to use global variables.
-# # If in each function you delare a new reference, functionality is broken
 lte = LTE()
 
 
@@ -55,9 +49,8 @@ def APIGet(path, data):
         array: [http status (int), data (string)]
     """
     port = 443
-    host = 'route/test?hellodata=3&hi=true'
-    headers = 'POST /api/data/adddata HTTP/1.1\r\n\r\nHost:' + str(host) + str(port) + '\r\n'
-    headers += 'Content-Type: application/json\r\nContent-Length: ' + str(len(data)) + '\r\nConnection: keep-aliver\r\n\r\n'
+    host = 'prestoapi.azurewebsites.net' # <--------------- TODO Make sure host is right
+    headers = 'GET ' + path + ' HTTP/1.1\r\nHost:' + host + str(port) + '\r\n'
     addr = socket.getaddrinfo(host, port)[0][-1]
     s = socket.socket()
     s.connect(addr)
