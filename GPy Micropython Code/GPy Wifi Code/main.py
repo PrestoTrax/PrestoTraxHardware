@@ -24,19 +24,17 @@ def APIPost(path, data):
     """
     port = 443
     host = 'prestoapi.azurewebsites.net'
-    req = 'POST /' + path + ' HTTP/1.1\r\n\r\nHost:' + str(host) + str(port) + '\r\n\r\n'
+    req = 'POST /' + path + ' HTTP/1.1\r\nHost: ' + str(host) + '\r\n'
     req += 'Content-Type: application/json\r\nContent-Length: ' + str(len(data)) + '\r\nConnection: keep-alive\r\n\r\n'
+    req += data
     addr = socket.getaddrinfo(host, port)[0][-1]
     s = socket.socket()
+    s = ssl.wrap_socket(s)
     s.connect(addr)
-    s.send(bytes(req, 'utf8'))
-    res = ''
-    while True:
-        incoming = s.recv(500)
-        if incoming:
-            res = incoming
-        else:
-            break
+    print("\n\n" + req + "\n")
+    s.send(req)
+    time.sleep(3)
+    res = s.recv(5000)
     s.close()
     return res
 
@@ -52,15 +50,15 @@ def APIGet(path):
     """
     port = 443
     host = 'prestoapi.azurewebsites.net'
-    req = 'GET /' + path + ' HTTP/1.1\r\n\r\nHost:' + str(host) + str(port) + '\r\n\r\n'
+    req = 'GET /' + path + ' HTTP/1.1\r\nHost: ' + str(host) + '\r\n\r\n'
     addr = socket.getaddrinfo(host, port)[0][-1]
     s = socket.socket()
     s = ssl.wrap_socket(s)
     s.connect(addr)
+    print("\n\n" + req + "\n")
     s.send(req)
     time.sleep(3)
     res = s.recv(5000)
-    print(res)
     s.close()
     return res
 
@@ -83,5 +81,5 @@ while not wlan.isconnected():
 print("WiFi connected succesfully")
 print(wlan.ifconfig())
 
-print(APIGet('/records/new'))
+print(APIPost('records/new', '{"owner_id": 8,"parent_device": 1,"reported_lost": 0,"location": { "latitude": "33.512766 / N 33° 30\' 45.956", "longitude": "-112.126330 / W 112° 7\' 34.786"} }'))
 pycom.rgbled(0x00FF60)
